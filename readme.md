@@ -1,16 +1,19 @@
-# 🎬 ytstream — Stream YouTube depuis le terminal (Mac)
+# 🎬 ytstream — YouTube CLI interactif depuis le terminal (Mac)
 
-Un script simple, puissant et automatisé pour **lire des vidéos YouTube directement depuis le terminal**, sans téléchargement, avec **haute qualité** et **mode audio optionnel**.
+Un outil en ligne de commande pour **regarder et écouter YouTube directement depuis le terminal**, avec un menu interactif complet : recherche, abonnements, choix de qualité, mode audio/vidéo, et connexion à ton compte.
 
 ---
 
 ## 🚀 Fonctionnalités
 
-- ▶️ Streaming direct depuis une URL YouTube
-- 🎬 Mode vidéo (par défaut, haute qualité)
-- 🎧 Mode audio uniquement
+- 🔍 **Recherche YouTube** depuis le terminal (10 résultats, choix interactif)
+- 🔗 **Lecture d'une URL directe** YouTube
+- 📰 **Feed d'abonnements** (dernières vidéos de tes chaînes suivies)
+- 🔐 **Connexion à ton compte YouTube** via cookies
+- 🎚 **Choix de la qualité** : Meilleure / 1080p / 720p / 480p / 360p
+- 🎛 **Mode vidéo ou audio uniquement**
 - ⚙️ Installation automatique des dépendances
-- 🧠 Détection intelligente des outils manquants
+- 🔄 Mise à jour intégrée de `yt-dlp`
 - ⚡ Zéro pub, rapide et léger
 
 ---
@@ -20,6 +23,15 @@ Un script simple, puissant et automatisé pour **lire des vidéos YouTube direct
 - macOS
 - Accès internet
 - Terminal (zsh/bash)
+
+Les dépendances suivantes sont **installées automatiquement** si absentes :
+
+| Outil | Rôle |
+|---|---|
+| `brew` | Gestionnaire de paquets macOS |
+| `mpv` | Lecteur vidéo/audio performant |
+| `yt-dlp` | Récupération des flux YouTube |
+| `fzf` | Sélecteur interactif dans le terminal |
 
 ---
 
@@ -38,56 +50,123 @@ cd youtube_stream
 chmod +x ytstream.sh
 ```
 
+### 3. Lancer le script
+
+```bash
+./ytstream.sh
+```
+
 ---
 
 ## ▶️ Utilisation
 
-### 🔹 Lire une vidéo (mode vidéo par défaut)
+Lance simplement le script, sans argument :
 
 ```bash
-./ytstream.sh "https://www.youtube.com/watch?v=VIDEO_ID"
+./ytstream.sh
 ```
 
-### 🔹 Lire en mode audio uniquement
+Un menu interactif s'affiche :
 
-```bash
-./ytstream.sh "https://www.youtube.com/watch?v=VIDEO_ID" audio
+```
+╔══════════════════════════════════════════╗
+║       ��  ytstream — YouTube CLI          ║
+╚══════════════════════════════════════════╝
+
+  ● Non connecté
+
+  1) 🔍 Rechercher une vidéo
+  2) 🔗 Lire une URL directe
+  3) 📰 Mes abonnements (feed)
+  4) 🔐 Connexion à YouTube
+  5) 🔄 Mettre à jour yt-dlp
+  6) ❌ Quitter
 ```
 
 ---
 
-## 🧪 Exemple concret
+## 🔐 Connexion à ton compte YouTube
 
-```bash
-./ytstream.sh "https://www.youtube.com/watch?v=UBO8yngC-o0"
+La connexion se fait via un fichier de **cookies exportés depuis ton navigateur**. Cela te permet d'accéder à ton feed d'abonnements et aux vidéos privées/membres.
+
+### Étapes :
+
+1. Installe l'extension **[Get cookies.txt LOCALLY](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)** sur Chrome ou Firefox
+2. Connecte-toi sur [youtube.com](https://www.youtube.com)
+3. Clique sur l'extension et exporte les cookies au format **Netscape**
+4. Renomme/déplace le fichier ici :
+
+```
+~/.ytstream_cookies.txt
 ```
 
-👉 Lance immédiatement la vidéo en haute qualité.
+5. Retourne dans le menu et vérifie l'option **4) Connexion** — elle confirmera que les cookies sont détectés.
+
+> ⚠️ Les cookies sont personnels. Ne les partage jamais.
 
 ---
 
-## ⚙️ Fonctionnement interne
+## 🔍 Recherche YouTube
 
-Le script :
+Depuis le menu, choisis l'option **1)**.
 
-1. Vérifie si `brew` est installé
-2. Installe automatiquement `mpv` (lecteur vidéo) et `yt-dlp` (récupération des flux)
-3. Lance le streaming directement dans le terminal
+1. Tape ta recherche (nom de vidéo, chaîne, sujet...)
+2. Les 10 premiers résultats s'affichent numérotés
+3. Choisis un numéro
+4. Sélectionne la **qualité** et le **mode** (vidéo ou audio)
+5. La lecture démarre automatiquement
+
+---
+
+## 📰 Feed d'abonnements
+
+Depuis le menu, choisis l'option **3)**.
+
+> Nécessite d'être connecté (cookies).
+
+Les 20 dernières vidéos de tes abonnements s'affichent. Choisis une vidéo, configure la qualité et le mode, et lance la lecture.
+
+---
+
+## 🎚 Qualités disponibles
+
+| Choix | Qualité |
+|---|---|
+| 1 | 🏆 Meilleure qualité disponible |
+| 2 | 🖥 1080p |
+| 3 | 📺 720p |
+| 4 | 📱 480p |
+| 5 | 🐢 360p (faible débit) |
+
+---
+
+## 🎛 Modes de lecture
+
+| Choix | Mode |
+|---|---|
+| 1 | 🎬 Vidéo |
+| 2 | 🎧 Audio uniquement |
 
 ---
 
 ## 🧠 Astuce — Alias
 
-Ajoute un alias dans ton `~/.zshrc` pour gagner du temps :
+Ajoute un alias dans ton `~/.zshrc` pour lancer ytstream de n'importe où :
 
 ```bash
-alias ytplay="~/chemin/vers/ytstream.sh"
+alias ytstream="~/chemin/vers/ytstream.sh"
 ```
 
-Puis utilise-le simplement :
+Recharge ton shell :
 
 ```bash
-ytplay "URL"
+source ~/.zshrc
+```
+
+Puis utilise :
+
+```bash
+ytstream
 ```
 
 ---
@@ -106,13 +185,17 @@ youtube_stream/
 
 | Fonctionnalité | Statut |
 |---|---|
+| 🔍 Recherche interactive | ✅ Fait |
+| 🔗 Lecture URL directe | ✅ Fait |
+| 🎚 Choix de qualité | ✅ Fait |
+| 🎛 Mode audio/vidéo | ✅ Fait |
+| 🔐 Connexion compte YouTube | ✅ Fait |
+| 📰 Feed abonnements | ✅ Fait |
+| 🔄 Mise à jour yt-dlp intégrée | ✅ Fait |
 | 🎶 Support des playlists | 🔜 Prévu |
 | ⏱ Reprendre la lecture | 🔜 Prévu |
-| �� Contrôle avancé (pause, skip, volume) | 🔜 Prévu |
 | 📜 Historique des vidéos | 🔜 Prévu |
-| 🔍 Recherche depuis le terminal | 🔜 Prévu |
 | 📥 Mode téléchargement (vidéo/audio) | 🔜 Prévu |
-| ⚡ Cache intelligent | 🔜 Prévu |
 
 ---
 
