@@ -1,6 +1,19 @@
 # 🎬 ytstream — Stream YouTube depuis le terminal (Mac)
 
-Un script simple, puissant et automatisé pour **lire des vidéos YouTube directement depuis le terminal**, sans téléchargement, avec **haute qualité** et **mode audio optionnel**.
+Un script simple, puissant et automatisé pour *## 🔥 Roadmap
+
+| Fonctionnalité | Statut |
+|---|---|
+| 🔍 Menu interactif (recherche, navigation) | 🔜 Prévu |
+| 🔐 Connexion à son compte YouTube | 🔜 Prévu |
+| 📰 Feed d'abonnements (dernières vidéos) | 🔜 Prévu |
+| 🎚 Choix de la qualité (1080p, 720p, 480p...) | 🔜 Prévu |
+| 🎛 Choix interactif audio ou vidéo | 🔜 Prévu |
+| 🎶 Support des playlists | 🔜 Prévu |
+| ⏱ Reprendre la lecture | 🔜 Prévu |
+| 📜 Historique des vidéos | 🔜 Prévu |
+| 📥 Mode téléchargement (vidéo/audio) | 🔜 Prévu |
+| ⚡ Cache intelligent | 🔜 Prévu |idéos YouTube directement depuis le terminal**, sans téléchargement, avec **haute qualité** et **mode audio optionnel**.
 
 ---
 
