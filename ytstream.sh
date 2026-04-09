@@ -87,29 +87,43 @@ if [ "$MODE" = "audio" ]; then
   log "🎧 Mode : audio uniquement"
   log "🔗 $URL"
   echo ""
+  log "⏳ Récupération du flux audio..."
 
   mpv \
     --no-video \
     --audio-buffer=2 \
     --cache=yes \
     --demuxer-max-bytes=20MiB \
+    --term-status-msg="  ▶ En cours : \${time-pos} / \${duration} — \${percent-pos}%" \
     "$URL"
 
 else
-  log "🎬 Mode : vidéo (720p max, fallback automatique)"
+  log "🎬 Mode : vidéo (720p H.264, fallback automatique)"
   log "🔗 $URL"
   echo ""
+  log "⏳ Étape 1/3 — Analyse de l'URL via yt-dlp..."
 
-  # Options mpv :
-  #   --ontop              → fenêtre toujours au-dessus (Picture-in-Picture)
-  #   --geometry           → taille et position par défaut (coin bas-droite)
-  #   --autofit            → limite la taille max à 40% de l'écran
-  #   --ytdl-format        → qualité 720p H.264 avec fallback
-  #   --cache              → buffer pour éviter les saccades réseau
-  #   --hwdec=videotoolbox → décodage matériel H.264/H.265 natif macOS
-  #   --video-sync         → synchronisation fluide
-  #   --force-window=yes   → force l'ouverture immédiate de la fenêtre
-  #   --really-quiet       → supprime les logs parasites dans le terminal
+  # Récupère le titre de la vidéo avant de lancer mpv (feedback immédiat)
+  VIDEO_TITLE=$(yt-dlp --get-title --no-playlist --quiet "$URL" 2>/dev/null)
+  if [ -n "$VIDEO_TITLE" ]; then
+    ok "Vidéo trouvée : \"$VIDEO_TITLE\""
+  else
+    warn "Titre non récupéré (live ou accès restreint), on continue..."
+  fi
+
+  log "⏳ Étape 2/3 — Sélection du flux H.264 720p..."
+
+  # Vérifie si un flux H.264 est disponible, sinon avertit
+  CODEC_CHECK=$(yt-dlp --list-formats --no-playlist --quiet "$URL" 2>/dev/null | grep -i "avc1" | head -1)
+  if [ -n "$CODEC_CHECK" ]; then
+    ok "Flux H.264 disponible — décodage VideoToolbox activé"
+  else
+    warn "Aucun flux H.264 trouvé — fallback sur le meilleur disponible"
+  fi
+
+  log "⏳ Étape 3/3 — Ouverture du lecteur flottant..."
+  echo ""
+
   mpv \
     --ontop \
     --geometry="40%x40%+95%+95%" \
@@ -121,6 +135,7 @@ else
     --video-sync=display-resample \
     --force-window=yes \
     --really-quiet \
+    --term-status-msg="  ▶ En cours : \${time-pos} — buffer : \${demuxer-cache-duration}s" \
     --keep-open=no \
     "$URL"
 fi
