@@ -1,30 +1,21 @@
-# 🎬 ytstream — Stream YouTube depuis le terminal (Mac)
+# 🎬 ytstream — Stream YouTube optimisé pour développeur (Mac)
 
-Un script simple, puissant et automatisé pour *## 🔥 Roadmap
+Un script CLI minimaliste pour **streamer YouTube directement depuis le terminal**, avec une fenêtre flottante Picture-in-Picture, une qualité adaptée aux performances, et zéro friction.
 
-| Fonctionnalité | Statut |
-|---|---|
-| 🔍 Menu interactif (recherche, navigation) | 🔜 Prévu |
-| 🔐 Connexion à son compte YouTube | 🔜 Prévu |
-| 📰 Feed d'abonnements (dernières vidéos) | 🔜 Prévu |
-| 🎚 Choix de la qualité (1080p, 720p, 480p...) | 🔜 Prévu |
-| 🎛 Choix interactif audio ou vidéo | 🔜 Prévu |
-| 🎶 Support des playlists | 🔜 Prévu |
-| ⏱ Reprendre la lecture | 🔜 Prévu |
-| 📜 Historique des vidéos | 🔜 Prévu |
-| 📥 Mode téléchargement (vidéo/audio) | 🔜 Prévu |
-| ⚡ Cache intelligent | 🔜 Prévu |idéos YouTube directement depuis le terminal**, sans téléchargement, avec **haute qualité** et **mode audio optionnel**.
+> Conçu pour les développeurs qui veulent garder une vidéo en fond sans sacrifier les performances de leur machine.
 
 ---
 
 ## 🚀 Fonctionnalités
 
-- ▶️ Streaming direct depuis une URL YouTube
-- 🎬 Mode vidéo (par défaut, haute qualité)
-- 🎧 Mode audio uniquement
-- ⚙️ Installation automatique des dépendances
-- 🧠 Détection intelligente des outils manquants
-- ⚡ Zéro pub, rapide et léger
+- 🎬 **Mode vidéo** avec fenêtre flottante toujours au-dessus (PiP)
+- 🎧 **Mode audio** uniquement, consommation minimale
+- 🎚 **Qualité 720p max** par défaut (fallback automatique si indisponible)
+- 🔌 **Décodage matériel** (`hwdec`) pour économiser le CPU
+- 🌐 **Vérification réseau** avant le lancement
+- 🛡 **Gestion des erreurs** (URL invalide, absence réseau, crash mpv)
+- ⚙️ **Installation automatique** des dépendances manquantes
+- ⚡ Zéro dépendance lourde, approche minimaliste
 
 ---
 
@@ -33,6 +24,14 @@ Un script simple, puissant et automatisé pour *## 🔥 Roadmap
 - macOS
 - Accès internet
 - Terminal (zsh/bash)
+
+Les dépendances suivantes sont **installées automatiquement** si absentes :
+
+| Outil | Rôle |
+|---|---|
+| `brew` | Gestionnaire de paquets macOS |
+| `mpv` | Lecteur vidéo/audio performant |
+| `yt-dlp` | Récupération des flux YouTube |
 
 ---
 
@@ -69,38 +68,70 @@ chmod +x ytstream.sh
 
 ---
 
-## 🧪 Exemple concret
+## 🎚 Qualité vidéo — Pourquoi 720p ?
 
-```bash
-./ytstream.sh "https://www.youtube.com/watch?v=UBO8yngC-o0"
+Le script est pensé pour un usage **en multitâche** : tu streamlines une vidéo pendant que tu développes (Flutter, Android Studio, VS Code...).
+
+La qualité **720p max** est le bon compromis :
+- ✅ Image nette et agréable dans une petite fenêtre PiP
+- ✅ Décodage léger, CPU/RAM préservés pour ton IDE
+- ✅ Moins de bande passante consommée
+
+### Logique de fallback automatique
+
+Si le 720p n'est pas disponible sur la vidéo, le script descend automatiquement :
+
+```
+720p → 480p → 360p → meilleur disponible
 ```
 
-👉 Lance immédiatement la vidéo en haute qualité.
+Aucune intervention manuelle nécessaire.
+
+---
+
+## 🖥 Lecteur flottant — Picture-in-Picture
+
+En mode vidéo, la fenêtre mpv est configurée pour :
+
+| Option | Comportement |
+|---|---|
+| `--ontop` | Fenêtre toujours au-dessus des autres apps |
+| `--geometry=40%x40%+95%+95%` | Positionnée en bas à droite de l'écran |
+| `--autofit=40%` | Taille limitée à 40% de l'écran |
+| `--hwdec=auto-safe` | Décodage matériel automatique (GPU) |
+
+Tu peux **redimensionner et déplacer** la fenêtre librement avec la souris.
 
 ---
 
 ## ⚙️ Fonctionnement interne
 
-Le script :
-
-1. Vérifie si `brew` est installé
-2. Installe automatiquement `mpv` (lecteur vidéo) et `yt-dlp` (récupération des flux)
-3. Lance le streaming directement dans le terminal
+1. Valide l'URL passée en paramètre
+2. Vérifie la connexion internet (timeout 5s)
+3. Installe les dépendances manquantes via Homebrew
+4. Lance `mpv` avec les options optimisées selon le mode choisi
 
 ---
 
 ## 🧠 Astuce — Alias
 
-Ajoute un alias dans ton `~/.zshrc` pour gagner du temps :
+Ajoute un alias dans ton `~/.zshrc` pour lancer ytstream de n'importe où :
 
 ```bash
 alias ytplay="~/chemin/vers/ytstream.sh"
 ```
 
-Puis utilise-le simplement :
+Recharge ton shell :
+
+```bash
+source ~/.zshrc
+```
+
+Puis utilise :
 
 ```bash
 ytplay "URL"
+ytplay "URL" audio
 ```
 
 ---
@@ -115,17 +146,17 @@ youtube_stream/
 
 ---
 
-## 🔥 Roadmap
+## 🔥 Améliorations futures
 
-| Fonctionnalité | Statut |
+| Fonctionnalité | Description |
 |---|---|
-| 🎶 Support des playlists | 🔜 Prévu |
-| ⏱ Reprendre la lecture | 🔜 Prévu |
-| �� Contrôle avancé (pause, skip, volume) | 🔜 Prévu |
-| 📜 Historique des vidéos | 🔜 Prévu |
-| 🔍 Recherche depuis le terminal | 🔜 Prévu |
-| 📥 Mode téléchargement (vidéo/audio) | 🔜 Prévu |
-| ⚡ Cache intelligent | 🔜 Prévu |
+| 🔍 Recherche depuis le terminal | Rechercher une vidéo sans ouvrir le navigateur |
+| 🎶 Support des playlists | Lire une playlist YouTube complète |
+| ⏱ Reprise de lecture | Reprendre là où on s'est arrêté |
+| 📜 Historique des vidéos | Conserver un log des vidéos regardées |
+| ⌨️ Raccourcis clavier avancés | Contrôle volume, skip, vitesse via le terminal |
+| 🔐 Connexion compte YouTube | Accéder aux abonnements et vidéos privées |
+| 📥 Mode téléchargement | Télécharger vidéo ou audio en local |
 
 ---
 
@@ -141,7 +172,7 @@ Les contributions sont les bienvenues !
 
 ---
 
-## 📄 Licence
+## �� Licence
 
 [MIT](LICENSE) — libre d'utilisation et de modification.
 
