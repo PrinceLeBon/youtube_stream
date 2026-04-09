@@ -13,8 +13,9 @@ URL="$1"
 MODE="$2"  # "audio" ou vide (vidéo par défaut)
 
 # Qualité cible : 720p max pour préserver CPU/RAM
-# Fallback automatique vers la meilleure qualité inférieure disponible
-VIDEO_FORMAT="bestvideo[height<=720]+bestaudio/bestvideo[height<=480]+bestaudio/bestvideo[height<=360]+bestaudio/best[height<=720]/best"
+# AV1 exclu : non supporté en hwdec sur la majorité des Mac (Intel/Apple Silicon < M3)
+# Fallback automatique vers la meilleure qualité inférieure disponible en H.264/H.265
+VIDEO_FORMAT="bestvideo[height<=720][vcodec!*=av01]+bestaudio/bestvideo[height<=480][vcodec!*=av01]+bestaudio/bestvideo[height<=360][vcodec!*=av01]+bestaudio/bestvideo[height<=720]+bestaudio/best"
 
 # ─────────────────────────────────────────
 # FONCTIONS UTILITAIRES
@@ -114,7 +115,7 @@ else
     --ytdl-format="$VIDEO_FORMAT" \
     --cache=yes \
     --demuxer-max-bytes=30MiB \
-    --hwdec=auto-safe \
+    --hwdec=videotoolbox \
     --video-sync=display-resample \
     --keep-open=no \
     "$URL"
