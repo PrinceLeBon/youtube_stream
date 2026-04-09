@@ -12,10 +12,10 @@
 URL="$1"
 MODE="$2"  # "audio" ou vide (vidéo par défaut)
 
-# Qualité cible : 720p max pour préserver CPU/RAM
-# AV1 exclu : non supporté en hwdec sur la majorité des Mac (Intel/Apple Silicon < M3)
-# Fallback automatique vers la meilleure qualité inférieure disponible en H.264/H.265
-VIDEO_FORMAT="bestvideo[height<=720][vcodec!*=av01]+bestaudio/bestvideo[height<=480][vcodec!*=av01]+bestaudio/bestvideo[height<=360][vcodec!*=av01]+bestaudio/bestvideo[height<=720]+bestaudio/best"
+# Qualité cible : 720p max, H.264 uniquement (avc1) pour VideoToolbox natif macOS
+# AV1 et VP9 exclus : pas de hwdec fiable sur Mac Intel / Apple Silicon < M3
+# Fallback : 480p H.264 → 360p H.264 → n'importe quelle 720p → best
+VIDEO_FORMAT="bestvideo[height<=720][vcodec^=avc1]+bestaudio/bestvideo[height<=480][vcodec^=avc1]+bestaudio/bestvideo[height<=360][vcodec^=avc1]+bestaudio/bestvideo[height<=720]+bestaudio/best"
 
 # ─────────────────────────────────────────
 # FONCTIONS UTILITAIRES
@@ -104,10 +104,12 @@ else
   #   --ontop              → fenêtre toujours au-dessus (Picture-in-Picture)
   #   --geometry           → taille et position par défaut (coin bas-droite)
   #   --autofit            → limite la taille max à 40% de l'écran
-  #   --ytdl-format        → qualité 720p max avec fallback
+  #   --ytdl-format        → qualité 720p H.264 avec fallback
   #   --cache              → buffer pour éviter les saccades réseau
-  #   --hwdec              → décodage matériel pour économiser le CPU
+  #   --hwdec=videotoolbox → décodage matériel H.264/H.265 natif macOS
   #   --video-sync         → synchronisation fluide
+  #   --force-window=yes   → force l'ouverture immédiate de la fenêtre
+  #   --really-quiet       → supprime les logs parasites dans le terminal
   mpv \
     --ontop \
     --geometry="40%x40%+95%+95%" \
@@ -117,6 +119,8 @@ else
     --demuxer-max-bytes=30MiB \
     --hwdec=videotoolbox \
     --video-sync=display-resample \
+    --force-window=yes \
+    --really-quiet \
     --keep-open=no \
     "$URL"
 fi
